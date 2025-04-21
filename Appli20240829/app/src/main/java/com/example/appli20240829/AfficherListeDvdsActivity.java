@@ -19,7 +19,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
-
+import android.widget.ImageButton;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -189,6 +189,35 @@ public class AfficherListeDvdsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(AfficherListeDvdsActivity.this, AfficherPanierActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        ImageButton btnActualiser = findViewById(R.id.btnActualiser);
+        btnActualiser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(AfficherListeDvdsActivity.this, "Actualisation...", Toast.LENGTH_SHORT).show();
+
+                // Relance l’appel API
+                barreDeProgression.setVisibility(View.VISIBLE);
+                texteChargement.setVisibility(View.VISIBLE);
+                listeDvdsView.setVisibility(View.GONE);
+
+                ExecutorService executorService = Executors.newSingleThreadExecutor();
+                executorService.submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        final ArrayList<String> listeDvds = appelerApi(
+                                DonneesPartagees.getURLConnexion() + "/toad/inventory/available/details"
+                        );
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                afficherListe(listeDvds);
+                            }
+                        });
+                    }
+                });
             }
         });
     }

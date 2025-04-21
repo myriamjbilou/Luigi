@@ -5,7 +5,15 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- TextView pour afficher un message d'attente -->
+    <ImageButton
+        android:id="@+id/btnActualiser"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="12dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Rafraîchir"
+        android:src="@drawable/baseline_refresh_24" />
     <TextView
         android:id="@+id/texteChargement"
         android:layout_width="wrap_content"
