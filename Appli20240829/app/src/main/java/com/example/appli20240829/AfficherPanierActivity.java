@@ -73,7 +73,6 @@ public class AfficherPanierActivity extends AppCompatActivity {
             return;
         }
 
-        // Utilisation d'un thread pour éviter de bloquer l'UI
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.submit(new Runnable() {
             @Override
@@ -129,13 +128,21 @@ public class AfficherPanierActivity extends AppCompatActivity {
     /**
      * Extrait l'inventoryId d'une chaîne formatée : "42 - Titre : ..."
      */
-    private int parseInventoryId(String filmString) {
+    private int parseInventoryId(String filmDetails) {
         try {
-            String[] parts = filmString.split(" - ");
-            return Integer.parseInt(parts[0].trim());
+            // Chaque ligne séparée par un retour à la ligne
+            String[] lignes = filmDetails.split("\n");
+            for (String ligne : lignes) {
+                if (ligne.startsWith("Inventory ID")) {
+                    // Extrait juste le nombre
+                    String[] parts = ligne.split(":");
+                    return Integer.parseInt(parts[1].trim());
+                }
+            }
         } catch (Exception e) {
-            Log.e("PanierDebug", "Impossible de parser l'inventoryId pour: " + filmString, e);
-            return -1;
+            Log.e("PanierDebug", "Impossible de parser l'inventoryId pour: " + filmDetails, e);
         }
+        return -1; // Valeur d'erreur
     }
+
 }

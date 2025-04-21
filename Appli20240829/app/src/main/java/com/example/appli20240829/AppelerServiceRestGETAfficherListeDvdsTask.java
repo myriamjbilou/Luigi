@@ -67,11 +67,13 @@ public class AppelerServiceRestGETAfficherListeDvdsTask extends AsyncTask<String
             JSONArray jsonArray = new JSONArray(result);
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject film = jsonArray.getJSONObject(i);
-                String titre = film.getString("title");
-                String releaseYear = film.getString("releaseYear");
-                String rentalDuration = film.getString("rentalDuration");
+                int inventoryId = film.getInt("inventoryId");
+                int filmId = film.getInt("filmId");
+                String title = film.getString("title");
 
-                String dvdInfo = "Titre : " + titre + "\nAnnée : " + releaseYear + "\nDurée de location : " + rentalDuration;
+                String dvdInfo = "Inventory ID : " + inventoryId
+                        + "\nFilm ID : " + filmId
+                        + "\nTitre : " + title;
                 listeDvds.add(dvdInfo);
             }
 

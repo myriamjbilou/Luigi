@@ -56,14 +56,14 @@ public class AfficherListeDvdsActivity extends AppCompatActivity {
         listeDvdsView.setVisibility(View.GONE);
 
         new AppelerServiceRestGETAfficherListeDvdsTask(this)
-                .execute(DonneesPartagees.getURLConnexion() + "/toad/film/allWithInventory");
+                .execute(DonneesPartagees.getURLConnexion() + "/toad/inventory/available/details");
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.submit(new Runnable() {
             @Override
             public void run() {
                 final ArrayList<String> listeDvds = appelerApi(
-                        DonneesPartagees.getURLConnexion() + "/toad/film/allWithInventory"
+                        DonneesPartagees.getURLConnexion() + "/toad/inventory/available/details"
                 );
 
                 runOnUiThread(new Runnable() {
@@ -112,17 +112,13 @@ public class AfficherListeDvdsActivity extends AppCompatActivity {
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject film = jsonArray.getJSONObject(i);
                     int inventoryId = film.getInt("inventoryId");
-                    String titre = film.getString("title");
-                    String releaseYear = film.getString("releaseYear");
-                    String description = film.optString("description");
-                    String rentalDuration = film.getString("rentalDuration");
+                    int filmId = film.getInt("filmId");
+                    String title = film.getString("title");
 
-                    Log.d("API_DEBUG", "Film " + i + " - inventoryId: " + inventoryId + ", titre: " + titre);
+                    String dvdInfo = "Inventory ID : " + inventoryId
+                            + "\nFilm ID : " + filmId
+                            + "\nTitre : " + title;
 
-                    String dvdInfo = inventoryId + " - Titre : " + titre
-                            + "\nAnnée : " + releaseYear
-                            + "\nDescription : " + description
-                            + "\nDurée de location : " + rentalDuration;
                     listeDvds.add(dvdInfo);
                 }
             } else {
