@@ -17,6 +17,9 @@ import java.util.ArrayList;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import java.util.HashMap;
+import java.util.Map;
+
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -55,9 +58,6 @@ public class AfficherListeDvdsActivity extends AppCompatActivity {
         texteChargement.setVisibility(View.VISIBLE);
         listeDvdsView.setVisibility(View.GONE);
 
-        new AppelerServiceRestGETAfficherListeDvdsTask(this)
-                .execute(DonneesPartagees.getURLConnexion() + "/toad/inventory/available/details");
-
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.submit(new Runnable() {
             @Override
@@ -79,7 +79,6 @@ public class AfficherListeDvdsActivity extends AppCompatActivity {
 
 
     private ArrayList<String> appelerApi(String url) {
-
         ArrayList<String> listeDvds = new ArrayList<>();
         try {
             // Connexion à l'API
@@ -103,14 +102,30 @@ public class AfficherListeDvdsActivity extends AppCompatActivity {
                 }
                 reader.close();
 
-                Log.d("API_DEBUG", "Réponse de l'API : " + response.toString());
+                Log.d("API_DEBUG", "Réponse brute JSON : " + response.toString());
 
                 // Traitement du JSON
                 JSONArray jsonArray = new JSONArray(response.toString());
-                Log.d("API_DEBUG", "Nombre de films reçus : " + jsonArray.length());
+                Log.d("API_DEBUG", "Nombre d'exemplaires reçus : " + jsonArray.length());
+
+                // 🔁 Map pour stocker un seul exemplaire dispo par filmId
+                Map<Integer, JSONObject> filmParId = new HashMap<>();
 
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject film = jsonArray.getJSONObject(i);
+                    int filmId = film.getInt("filmId");
+
+                    // DEBUG : log les doublons
+                    Log.d("DEBUG_FILM", "filmId = " + filmId + ", inventoryId = " + film.getInt("inventoryId") + ", title = " + film.getString("title"));
+
+                    // Si le filmId n’est pas encore stocké, on ajoute le premier exemplaire dispo
+                    if (!filmParId.containsKey(filmId)) {
+                        filmParId.put(filmId, film);
+                    }
+                }
+
+                // 🧾 Construction de la liste finale à afficher
+                for (JSONObject film : filmParId.values()) {
                     int inventoryId = film.getInt("inventoryId");
                     int filmId = film.getInt("filmId");
                     String title = film.getString("title");
@@ -121,6 +136,7 @@ public class AfficherListeDvdsActivity extends AppCompatActivity {
 
                     listeDvds.add(dvdInfo);
                 }
+
             } else {
                 Log.e("API_DEBUG", "Erreur HTTP : " + responseCode);
             }
@@ -128,6 +144,7 @@ public class AfficherListeDvdsActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e("API_DEBUG", "Erreur lors de l'appel API", e);
         }
+
         return listeDvds;
     }
 
