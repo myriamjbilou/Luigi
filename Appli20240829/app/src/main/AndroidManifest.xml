@@ -40,9 +40,6 @@
             android:name=".AfficherPanierActivity"
             android:exported="true"/>
 
-        <activity
-            android:name=".PanierManager"
-            android:exported="true"/>
 
 
 
